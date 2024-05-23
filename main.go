@@ -27,5 +27,5 @@ func main() {
 	}))
 	routers.Combine(r)
 	r.NoRoute(noLink)
-	r.Run(":8080")
+	r.Run("0.0.0.0:8080")
 }
