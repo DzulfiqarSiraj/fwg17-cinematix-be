@@ -2,11 +2,17 @@ package models
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
+type AiringDate struct {
+	Date             string `json:"date"`
+	DateID           int    `json:"dateId"`
+	AiringTimeDateID int    `json:"airingTimeDateId"`
+}
 type MovieTime struct {
-	Id             int    `db:"id" json:"movieTimeId"`
-	AiringTimeDate string `db:"airingTimeDate" json:"airingTimeDate"`
+	Id             int             `db:"id" json:"movieTimeId"`
+	AiringTimeDate *pq.StringArray `db:"airingTimeDate" json:"airingTimeDate"`
 }
 
 type AiringTimeDate struct {
@@ -15,24 +21,21 @@ type AiringTimeDate struct {
 	AiringTime       string `db:"time" json:"airingTime"`
 }
 
-
 type GetId struct {
 	Id int `db:"id" json:"id"`
 }
-
 
 // mengambil date berdasarkan movieCinemaId melalui table moviesTime
 func GetDate(movieCinemaId int) ([]MovieTime, error) {
 	sql := `
 	SELECT
 	"mt"."id",
-	JSONB_AGG(
-        DISTINCT JSONB_BUILD_OBJECT(
-            'airingTimeDateId', "atd"."id",
-			'dateId', "d"."id",
-			'date', "d"."date"
-        )
-    ) AS "airingTimeDate"
+	ARRAY_AGG(
+	DISTINCT JSONB_BUILD_OBJECT(
+		'airingTimeDateId', "atd"."id",
+		'dateId', "d"."id",
+		'date', "d"."date"
+	)) AS "airingTimeDate"
 	FROM "moviesTime" "mt"
 	JOIN "airingTimeDate" "atd" ON ("atd"."id" = "mt"."airingTimeDateId")
 	JOIN "date" "d" ON ("d"."id" = "atd"."dateId")
@@ -41,13 +44,9 @@ func GetDate(movieCinemaId int) ([]MovieTime, error) {
 	`
 	data := []MovieTime{}
 	err := db.Select(&data, sql, movieCinemaId)
-	if err != nil {
-		return data, err
-	}
 
 	return data, err
 }
-
 
 // mengambil airing time berdasarkan dateId melalui table airingTimeDate
 func GetAiringTime(c *gin.Context, dateId int) ([]AiringTimeDate, error) {
@@ -70,8 +69,6 @@ func GetAiringTime(c *gin.Context, dateId int) ([]AiringTimeDate, error) {
 	return data, err
 }
 
-
-
 // mengambil id movieTime berdasarkan airingTimeDateId dan movieCinemaId
 func GetMovieTimeId(c *gin.Context, airingTimeDateId int, movieCinemaId int) (GetId, error) {
 	sql := `
@@ -87,8 +84,6 @@ func GetMovieTimeId(c *gin.Context, airingTimeDateId int, movieCinemaId int) (Ge
 
 	return data, err
 }
-
-
 
 // mengambil id airingTimeDate berdasarkan airingTimeId dan dateId
 func GetAiringTimeDateId(c *gin.Context, airingTimeId int, dateId int) (GetId, error) {

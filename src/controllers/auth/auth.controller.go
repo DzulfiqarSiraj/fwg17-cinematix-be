@@ -27,7 +27,7 @@ func Register(c *gin.Context) {
 	usersData.Password = hasedPasswd.String()
 
 	createUser, err := models.RegisterUsers(usersData)
-	// fmt.Println(err)
+
 	if err != nil {
 		msg := "Email Already exists"
 		helpers.Utils(err, msg, c) // Error Handler

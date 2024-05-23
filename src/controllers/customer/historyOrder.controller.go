@@ -25,7 +25,7 @@ func GetHistoryOrder(c *gin.Context) {
 	offset := (page - 1) * limit
 
 	result, err := models.GetHistoryOrder(userId, page, limit, offset, orderBy, orderMethod)
-	if err != nil{
+	if err != nil {
 		msg := err.Error()
 		helpers.Utils(err, msg, c)
 		return
@@ -37,9 +37,7 @@ func GetHistoryOrder(c *gin.Context) {
 	// 	return
 	// }
 
-
-	
-	totalPage := int(math.Ceil(float64(result.Count)/float64(limit)))
+	totalPage := int(math.Ceil(float64(result.Count) / float64(limit)))
 	nextPage := page + 1
 	if nextPage > totalPage {
 		nextPage = 0
@@ -49,28 +47,22 @@ func GetHistoryOrder(c *gin.Context) {
 		prevPage = 0
 	}
 
-    
-
 	pageInfo := &services.PageInfo{
 		CurrentPage: page,
 		NextPage:    nextPage,
-        PrevPage:    prevPage,
+		PrevPage:    prevPage,
 		Limit:       limit,
 		TotalPage:   totalPage,
 		TotalData:   result.Count,
 	}
 
-	
 	c.JSON(http.StatusOK, &services.ResponseList{
-		Success: true,
-		Message: "Get history order success",
+		Success:  true,
+		Message:  "Get history order success",
 		PageInfo: *pageInfo,
-		Results: result.Data,
+		Results:  result.Data,
 	})
 }
-
-
-
 
 // for ticket information page
 func GetTicket(c *gin.Context) {
@@ -80,20 +72,19 @@ func GetTicket(c *gin.Context) {
 	orderId, _ := strconv.Atoi(c.Query("orderId"))
 
 	result, err := models.GetTicket(userId, orderId)
-	// fmt.Println(result)
-	if err != nil{
+
+	if err != nil {
 		msg := err.Error()
 
 		if result.Id == 0 {
 			message := fmt.Sprintf("user with id %v does not have order with id %v", userId, orderId)
 			msg = message
 		}
-		
+
 		helpers.Utils(err, msg, c)
 		return
 	}
 
-	
 	c.JSON(http.StatusOK, &services.Response{
 		Success: true,
 		Message: "Get ticket success",

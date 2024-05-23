@@ -14,7 +14,6 @@ func GetMovieCinemaId(c *gin.Context) {
 	movieId, _ := strconv.Atoi(c.Param("movieId"))
 
 	movieCinemaId, err := models.FindMovieCinemaByMovieId(movieId)
-	// fmt.Println(err)
 	if err != nil {
 		msg := "No Data Match"
 		helpers.Utils(err, msg, c)

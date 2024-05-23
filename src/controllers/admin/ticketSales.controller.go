@@ -17,7 +17,7 @@ func TicketSales(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(dataSales)
+
 	c.JSON(http.StatusOK, &services.Response{
 		Success: true,
 		Message: "Ticket Sales",

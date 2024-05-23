@@ -27,7 +27,6 @@ func GetReservedSeat(c *gin.Context) {
 	// 	return
 	// }
 
-	// fmt.Println(result)
 	c.JSON(http.StatusOK, &services.Response{
 		Success: true,
 		Message: "Get reserved seat success",

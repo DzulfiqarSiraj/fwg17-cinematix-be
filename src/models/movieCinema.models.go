@@ -6,11 +6,13 @@ func FindMovieCinemaByMovieId(movieId int) (services.MovieCinema, error) {
 	sql := `
 	SELECT
 	"m"."id" AS "movieId",
-	array_agg(distinct "c"."id") AS "cinemaId",
-	array_agg(distinct "c"."name") AS "cinemaName",
-	array_agg(distinct "c"."price") AS "cinemaPrice",
-	array_agg(distinct "mc"."id") AS "movieCinemaId",
-	array_agg(distinct "c"."image") AS "cinemaImage"
+	array_agg(DISTINCT jsonb_build_object(
+	  'cinemaId', "c"."id",
+	  'cinemaName', "c"."name" || '-' || "c"."grade",
+	  'cinemaPrice', "c"."price",
+	  'movieCinemaId', "mc"."id",
+	  'cinemaImage', "c"."image"
+	)) AS "cinema"
 	FROM "cinema" AS "c"
 	LEFT JOIN "movieCinema" "mc" ON "mc"."cinemaId"="c"."id"
 	LEFT JOIN "movies" "m" ON "m"."id"="mc"."moviesId"
