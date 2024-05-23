@@ -1,12 +1,10 @@
 {
-  "functions": {
-    "api/index.go": {
-      "runtime": "vercel-go@0.5.1"
+  "trailingSlash": false,
+  "rewrites":
+  [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.go"
     }
-  },
-  "build": {
-    "env": {
-      "GO_BUILD_FLAGS": "-ldflags '-s -w'"
-    }
-  }
+  ]
 }
