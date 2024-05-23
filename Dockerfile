@@ -1,13 +1,14 @@
-FROM golang
-
-WORKDIR /cinematix
-
+# Build Stage
+FROM golang:1.22.3-alpine3.20 AS builder
+WORKDIR /app
 COPY . .
+RUN go mod download
+RUN go build -o ./cinematix-app ./main.go
 
-RUN cat > .env
-RUN cp .env.example .env
-RUN go mod tidy
-
-EXPOSE 9090
-
-CMD go run .
+# Run Stage
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/cinematix-app .
+COPY .env .
+EXPOSE 8080
+ENTRYPOINT [ "./cinematix-app" ]
